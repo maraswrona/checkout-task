@@ -1,77 +1,45 @@
 package com.ubs.checkout;
 
+import static org.assertj.core.util.Preconditions.checkNotNull;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class Checkout {
 
-	private final List<Item> items = new ArrayList<>();
-	private final List<Promotion> promotions;
-	private final Map<String, Item> itemsRepository;
+	private final PromotionsRepository repository;
+	private final Basket basket = new Basket();
 
-	public Checkout(List<Promotion> promotions, Map<String, Item> itemsRepository) {
-		this.promotions = promotions;
-		this.itemsRepository = itemsRepository;
+	public Checkout(PromotionsRepository repository) {
+		checkNotNull(repository, "Promotions repository cannot be null");
+
+		this.repository = repository;
 	}
 
 	public void scanItem(Item item) {
-		items.add(item);
+		checkNotNull(item, "Item cannot be null");
+
+		basket.addItem(item);
 	}
 
 	public BigDecimal totalPrice() {
 		BigDecimal basePrice = calculateBasePrice();
-		BigDecimal finalPrice = applyPromotions(basePrice);
-		return finalPrice;
+		BigDecimal discounts = calculateDiscounts();
+		return basePrice.subtract(discounts);
 	}
 
 	private BigDecimal calculateBasePrice() {
-		BigDecimal sum = items.stream()
+		return basket.getItems()
+			.stream()
 			.map(Item::getPrice)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
-		return sum;
 	}
 
-	private BigDecimal applyPromotions(BigDecimal basePrice) {
-
-		BigDecimal finalPrice = basePrice;
-
-		for (Promotion promotion : promotions) {
-
-			// 1. check if promotion is applicable to this basket
-			// find if basket contains corresponding product
-			// count that product
-			// if count more than promotion requires
-			// then deduct the promotion count * regular price
-			// and add promotion price
-
-			int count = (int) items.stream()
-				.map(Item::getId)
-				.filter(itemId -> itemId.equals(promotion.getItemId()))
-				.count();
-
-			if (count >= promotion.getUnits()) {
-				// promotion triggered
-
-				int sets = count / promotion.getUnits();
-				// int individualItems = count % promotion.getUnits();
-
-				// deduct prices of sets: - sets * promo items * price
-				BigDecimal singleItemPrice = itemsRepository.get(promotion.getItemId())
-					.getPrice();
-				int deductedItems = sets * promotion.getUnits();
-				BigDecimal deductedPrice = singleItemPrice.multiply(BigDecimal.valueOf(deductedItems));
-
-				finalPrice = finalPrice.subtract(deductedPrice);
-
-				// add the promotion price
-				finalPrice = finalPrice.add(promotion.getDiscountedPrice());
-			}
-
-		}
-
-		return finalPrice;
+	private BigDecimal calculateDiscounts() {
+		return repository.getAvailablePromotions()
+			.stream()
+			.filter(p -> p.isApplicable(basket.getItems()))
+			.map(p -> p.calculateDiscount(basket.getItems()))
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 }

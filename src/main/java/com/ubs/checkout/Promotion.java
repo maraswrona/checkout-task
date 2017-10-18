@@ -1,29 +1,12 @@
 package com.ubs.checkout;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public class Promotion {
+public interface Promotion {
 
-	private final String itemId;
-	private final int units;
-	private final BigDecimal discountedPrice;
+	boolean isApplicable(List<Item> itemsInBasket);
 
-	public Promotion(String itemId, int units, BigDecimal discountedPrice) {
-		this.itemId = itemId;
-		this.units = units;
-		this.discountedPrice = discountedPrice;
-	}
-
-	public String getItemId() {
-		return itemId;
-	}
-
-	public int getUnits() {
-		return units;
-	}
-
-	public BigDecimal getDiscountedPrice() {
-		return discountedPrice;
-	}
+	BigDecimal calculateDiscount(List<Item> itemsInBasket);
 
 }
