@@ -1,6 +1,6 @@
 package com.ubs.checkout;
 
-import static org.assertj.core.util.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigDecimal;
 

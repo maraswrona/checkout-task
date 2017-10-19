@@ -1,7 +1,7 @@
 package com.ubs.checkout;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.assertj.core.util.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,14 +38,16 @@ public class MultibuyPromotion implements Promotion {
 		BigDecimal regularItemPrice = itemOnPromotion.getPrice();
 		BigDecimal totalRegularPrice = regularItemPrice.multiply(BigDecimal.valueOf(applicableItems));
 		BigDecimal totalDiscountedPrice = discountedPrice.multiply(BigDecimal.valueOf(groupsOfApplicableItems));
-		BigDecimal savings = totalRegularPrice.subtract(totalDiscountedPrice).max(BigDecimal.ZERO);
+		BigDecimal savings = totalRegularPrice.subtract(totalDiscountedPrice)
+			.max(BigDecimal.ZERO);
 
 		return savings;
 	}
 
 	private int countApplicableItems(List<Item> items) {
 		return (int) items.stream()
-			.filter(item -> item.getId().equals(itemOnPromotion.getId()))
+			.filter(item -> item.getId()
+				.equals(itemOnPromotion.getId()))
 			.count();
 	}
 
