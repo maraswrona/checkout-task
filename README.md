@@ -2,17 +2,17 @@
 
 This is a really __simple__ checkout component that allows you to scan your products and calculate their final price.
 
-###Features:
+### Features:
 - scan items one by one and add to basket
 - calculate the total price including any promotions if applicable
 - you can provide your Promotion definitions
 - Multibuy type Promotion (buy X pay Z) provided out of the box, but you can implement your own
 
-###API Limitations:
+### API Limitations:
 - you can only scan one item at a time
 - no way to remove item from basket, or empty the basket
 
-###Usage example:
+### Usage example:
 
 ```
 // initial setup of data
