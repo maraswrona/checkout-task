@@ -23,8 +23,8 @@ public class CheckoutTest {
 	MultibuyPromotion PD = new MultibuyPromotion(D, 2, new BigDecimal("0"));
 	PromotionsRepository repository = new PromotionsRepository(ImmutableList.of(PA, PB, PC, PD));
 
-	@DataProvider(name = "testCases")
-	public Object[][] testCases() {
+	@DataProvider(name = "scanItemTestCases")
+	public Object[][] scanItemTestCases() {
 		return new Object[][]
 			{
 					// for given items to scan, what is the expected total price?
@@ -52,10 +52,9 @@ public class CheckoutTest {
 			};
 	}
 
-	@Test(dataProvider = "testCases")
+	@Test(dataProvider = "scanItemTestCases")
 	public void verifyCheckoutCalculatesTotalPriceCorrectly(ImmutableList<Item> itemsToScan, BigDecimal expectedPrice) {
 		// given
-
 		Checkout checkout = new Checkout(repository);
 
 		// when
@@ -66,7 +65,6 @@ public class CheckoutTest {
 		// then
 		BigDecimal totalPrice = checkout.totalPrice();
 		assertThat(totalPrice).isEqualByComparingTo(expectedPrice);
-
 	}
 
 	@Test
